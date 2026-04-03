@@ -3,7 +3,7 @@
 # Structures de données pour les signalements communautaires
 
 from pydantic import BaseModel, Field, HttpUrl
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from datetime import datetime
 
 class URLReport(BaseModel):
