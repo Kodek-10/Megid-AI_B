@@ -6,7 +6,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from routers import reputation, federated, community, guardian
+from routers import reputation, federated, community, guardian, hibp, nlp
 from services.url_analyzer import url_analyzer
 
 
@@ -56,6 +56,8 @@ app.include_router(reputation.router)   # /reputation/scan, /reputation/report
 app.include_router(federated.router)    # /federated/gradients
 app.include_router(community.router)    # /community/report
 app.include_router(guardian.router)     # /guardian/alert
+app.include_router(hibp.router)  # /hibp/check-email, /hibp/check-password
+app.include_router(nlp.router)  # /nlp/analyze, /nlp/analyze-batch
 
 
 # ── Routes de base ─────────────────────────────────────────────────────────────
