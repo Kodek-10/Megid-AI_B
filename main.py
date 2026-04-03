@@ -8,6 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from routers import reputation, federated, community, guardian, hibp, nlp
 from services.url_analyzer import url_analyzer
+# Ajouter cet import en haut
+from database import init_db
+
 
 
 # asynccontextmanager = gère le démarrage et l'arrêt de l'application
@@ -19,6 +22,10 @@ async def lifespan(app: FastAPI):
     """
     # ── Démarrage ─────────────────────────────────────────────────────
     print("🛡  Megidai Backend démarrage...")
+
+    # Initialiser la base de données
+    await init_db()
+
     print("✅  URL Analyzer initialisé")
     print("✅  Serveur prêt sur http://0.0.0.0:8000")
     print("📖  Documentation : http://localhost:8000/docs")

@@ -3,6 +3,7 @@
 # Service d'analyse d'URLs — implémente le score multi-critères Megidai
 # Combine analyse syntaxique + liste blanche + réputation communautaire
 
+import os
 import re
 import socket
 import hashlib
@@ -11,6 +12,25 @@ from urllib.parse import urlparse
 from datetime import datetime, timedelta
 from typing import Optional, Tuple, List
 import httpx
+import joblib
+import numpy as np
+
+# Charger le modèle Random Forest au démarrage du serveur
+# None par défaut — sera chargé au premier appel si le fichier existe
+_rf_model = None
+
+def _load_rf_model():
+    """Charge le modèle Random Forest depuis le fichier .pkl"""
+    global _rf_model
+    model_path = "models/url_classifier.pkl"
+    if os.path.exists(model_path):
+        _rf_model = joblib.load(model_path)
+        print("✅ Modèle Random Forest chargé")
+    else:
+        print("⚠️  Modèle Random Forest non trouvé — analyse par règles uniquement")
+
+# Charger au démarrage
+_load_rf_model()
 
 # ── Constantes ────────────────────────────────────────────────────────────────
 
@@ -223,6 +243,19 @@ class URLAnalyzer:
                 })
                 score += context_score
 
+        # ── Score Random Forest ───────────────────────────────────────────
+        # Le RF ajoute une couche d'intelligence au score par règles
+        rf_score = self._get_rf_score(url)
+        if rf_score > 0:
+            # Pondération : 40% RF + 60% règles
+            score = int(score * 0.6 + rf_score * 0.4)
+            reasons.append({
+                "icon": "🤖",
+                "text": f"Analyse IA (Random Forest) : {rf_score}/100",
+                "points": 0,
+                "positive": rf_score < 50
+            })
+
         # ── Calcul final ──────────────────────────────────────────────────
         # S'assurer que le score reste entre 0 et 100
         final_score = max(0, min(100, score))
@@ -237,6 +270,31 @@ class URLAnalyzer:
             is_redirect=is_redirect,
             has_https=has_https,
         )
+    
+    def _get_rf_score(self, url: str) -> int:
+        """
+        Obtient le score de risque du Random Forest pour une URL.
+        Retourne 0 si le modèle n'est pas disponible.
+        """
+        global _rf_model
+        if _rf_model is None:
+            return 0
+
+        try:
+            # Extraire les features — même fonction que dans train_url.py
+            from ai.train_url import extract_features
+            features = np.array([extract_features(url)])
+
+            # predict_proba retourne [proba_légitime, proba_malveillant]
+            probabilities = _rf_model.predict_proba(features)[0]
+            malicious_proba = probabilities[1]  # Probabilité d'être malveillant
+
+            # Convertir en score 0-100
+            return int(malicious_proba * 100)
+
+        except Exception as e:
+            print(f"Erreur RF: {e}")
+            return 0
 
     def _build_result(self, url, score, reasons, elapsed_ms,
                       final_url=None, is_redirect=False, has_https=True) -> dict:

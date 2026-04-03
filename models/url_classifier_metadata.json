@@ -1,0 +1,23 @@
+{
+  "feature_names": [
+    "longueur_url",
+    "longueur_domaine",
+    "longueur_path",
+    "https",
+    "nb_points",
+    "nb_tirets",
+    "nb_chiffres",
+    "adresse_ip",
+    "raccourcisseur",
+    "mots_suspects",
+    "imitation_marque",
+    "tld_suspect",
+    "homoglyphes",
+    "nb_sous_domaines",
+    "params_suspects"
+  ],
+  "n_features": 15,
+  "n_estimators": 100,
+  "accuracy": 1.0,
+  "training_samples": 48
+}
