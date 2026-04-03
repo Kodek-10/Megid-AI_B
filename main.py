@@ -8,10 +8,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from routers import reputation, federated, community, guardian, hibp, nlp
 from services.url_analyzer import url_analyzer
+from dotenv import load_dotenv
+from services.notification import notification_service
 # Ajouter cet import en haut
 from database import init_db
 
 
+load_dotenv()  # Charge le fichier .env automatiquement
 
 # asynccontextmanager = gère le démarrage et l'arrêt de l'application
 @asynccontextmanager
@@ -35,6 +38,8 @@ async def lifespan(app: FastAPI):
     # ── Arrêt ─────────────────────────────────────────────────────────
     print("🛑  Megidai Backend arrêt...")
     await url_analyzer.close()
+    await notification_service.close()
+    print("✅  Notification service fermé")
     print("✅  Ressources libérées proprement")
 
 
