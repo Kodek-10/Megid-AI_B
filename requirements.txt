@@ -1,0 +1,38 @@
+
+# ── Serveur web ───────────────────────────────────────────
+fastapi==0.110.0
+uvicorn[standard]==0.27.1
+
+# ── Validation des données ────────────────────────────────
+pydantic==2.6.3
+pydantic-settings==2.2.1
+
+# ── Base de données ───────────────────────────────────────
+sqlalchemy==2.0.28
+aiosqlite==0.20.0
+
+# ── Requêtes HTTP (pour HIBP et Firebase) ─────────────────
+httpx==0.27.0
+aiohttp==3.9.3
+
+# ── Sécurité et chiffrement ───────────────────────────────
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography==42.0.5
+
+# ── IA et Machine Learning ────────────────────────────────
+numpy==1.26.4
+scikit-learn==1.5.0
+joblib==1.3.2
+
+# ── NLP et traitement du texte ────────────────────────────
+transformers==4.38.2
+torch==2.2.1
+tokenizers==0.15.2
+
+# ── Export TFLite ─────────────────────────────────────────
+tensorflow==2.16.1
+
+# ── Utilitaires ───────────────────────────────────────────
+python-dotenv==1.0.1
+python-multipart==0.0.9
